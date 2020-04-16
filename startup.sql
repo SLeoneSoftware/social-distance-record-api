@@ -10,5 +10,15 @@ firstname varchar(255),
 email  NVARCHAR(320),
 phone varchar CHECK (phone LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
 zipcode integer CHECK (zipcode LIKE '[0-9][0-9][0-9][0-9][0-9]'),
+coordinates integer NOT NULL,
 PRIMARY KEY(id)
-)
+);
+
+create table contacted(
+user integer NOT NULL,
+contacteduser integer NOT NULL,
+datemark varchar CHECK (datemark LIKE '[0-1][0-9]/[0-3][0-9]/[0-9][0-9][0-9][0-9]'),
+timemark varchar CHECK (timemark LIKE '[0-2][0-9]:[0-5][0-9]'),
+FOREIGN KEY (user) REFERENCES users(id),
+FOREIGN KEY (contacteduser) REFERENCES users(id),
+);
