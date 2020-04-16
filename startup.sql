@@ -10,7 +10,8 @@ firstname varchar(255),
 email  NVARCHAR(320),
 phone varchar CHECK (phone LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
 zipcode integer CHECK (zipcode LIKE '[0-9][0-9][0-9][0-9][0-9]'),
-coordinates integer NOT NULL,
+latitude integer NOT NULL,
+longitude integer NOT NULL,
 PRIMARY KEY(id)
 );
 
