@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, redirect, url_for, abort
 from flask_restful import Resource
+import sqlite3
 import distance
 
 
@@ -16,6 +17,22 @@ def updatelocation(uid, latitude, longitude):
 	#Search for users in contact
 	cur.execute('SELECT zipcode from users WHERE id = ?', (uid,))
 	zipcode, = cur.fetchone()
+	cur.execute('SELECT latitude, longitude, id from users WHERE zipcode = ?', (zipcode))
+	while True:
+		row = cur.fetchone()
+		if row == None:
+			break
+		lat_two,long_two, uid_two = row
+		social_distance = distance.calculate(latitude, longitude,lat_two, long_two) / 3280.839895 #changing km to feet
+		#account for +/- 3 feet in location
+		if social_distance < 9:
+			#add contact
+			cur2 = con.cursor()
+			time = ''
+			date = ''
+			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid, uid_two, date, time))
+			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid_two, uid, date, time))
+	con.commit()
 	return 0
 
 
