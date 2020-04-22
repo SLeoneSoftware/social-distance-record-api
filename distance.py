@@ -1,6 +1,6 @@
 from math import radians, sin, cos, acos
 
-
+#Units: KM
 def calculate(latOne, longOne, latTwo, longTwo):
 	R = 6373.01
 	latOne = radians(latOne) #40.606890
