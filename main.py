@@ -37,6 +37,9 @@ def updatelocation(uid, latitude, longitude):
 	con.commit()
 	return 0
 
+@app.route('/testedpositive/<id>')
+def testedpositive(uid):
+	return 0
 
 if __name__ == '__main__':
 	app.debug = True
