@@ -1,6 +1,6 @@
 --
 -- Schema for Users Database for Social Distancing Record
--- It's a pretty simple layout so far; just includes users. Location is a composite attribute from my ER model; nothing else is fancy.
+-- It's a pretty simple layout so far; just includes users and contacted list. Nothing fancy.
 --
 
 

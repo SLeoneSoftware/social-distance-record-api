@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, redirect, url_for, abort
 from flask_restful import Resource
 import sqlite3
 import distance
+from datetime import datetime
 
 
 
@@ -28,8 +29,9 @@ def updatelocation(uid, latitude, longitude):
 		if social_distance < 9:
 			#add contact
 			cur2 = con.cursor()
-			time = ''
-			date = ''
+			timestamp = str(datetime.now())
+			date = timestamp[0:10]
+			time = timestamp[11:16]
 			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid, uid_two, date, time))
 			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid_two, uid, date, time))
 	con.commit()
