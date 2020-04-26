@@ -1,0 +1,10 @@
+
+Dear ${PERSON_NAME}, 
+
+Please Be advised that may you have been in contact with a COVID-19 positive patient within the past two weeks.
+
+If you have not already been notified, please self quarantine for two weeks within recieving this email.
+
+Yours Truly,
+Social Distancing Recorders
+
