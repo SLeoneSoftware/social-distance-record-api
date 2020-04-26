@@ -3,10 +3,19 @@ from flask_restful import Resource
 import sqlite3
 import distance
 from datetime import datetime
+import smtplib
+from string import Template
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 
 app = Flask(__name__)
+
+def read_template(filename):
+    with open(filename, 'r', encoding='utf-8') as template_file:
+        template_file_content = template_file.read()
+    return Template(template_file_content)
 
 @app.route('/updatelocation/<id>/<latitude>/<longitude>')
 def updatelocation(uid, latitude, longitude):
@@ -43,7 +52,26 @@ def testedpositive(uid):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
 	cur.execute('SELECT contacted.contacteduser, contacted.datemark, contacted.timemark, user.email FROM contacted JOIN user on contacted.contacteduser = user.id  WHERE contacted.user = uid')
+	s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
+	s.starttls()
+	from dotenv import load_dotenv
+	load_dotenv()
+	MY_ADDRESS = token = os.environ.get("MY_ADDRESS")
+	PASSWORD = token = os.environ.get("PASSWORD")
+	s.login(MY_ADDRESS, PASSWORD)
+	message_template = read_template('message.txt')
 	while True:
+		row = cur.fetchone()
+		if row == None:
+			break
+		msg = MIMEMultipart()
+		message = message_template.substitute(PERSON_NAME=name)
+		name, date, time, email = row
+		msg['From']=MY_ADDRESS
+		msg['To'] = email
+		msg['Subject']="You contacted a COVID-19 positive patient on " + date + " at " + time + "."
+		s.send_message(msg)
+		del msg
 	con.close()
 	return 0
 
