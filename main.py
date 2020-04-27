@@ -17,6 +17,22 @@ def read_template(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)
 
+@app.route('/adduser/<firstname>/<email>/<phone>/<latitude>/<longitude>')
+def adduser(firstname, email, phone, latitude, longitude):
+	con = sqlite3.connect('record.sqlite3')
+	cur = con.cursor()
+	#TODO: Add in Zipcode functionality later 
+	zipcode = 11111
+	#
+	cur.execute('SELECT count(*) from users')
+	count, = cur.fetchone()
+	print(count)
+	count += 10000000
+	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), firstname, email, phone, int(zipcode), int(latitude), int(longitude)))
+	con.commit()
+	con.close()
+	return '<div> Test: Success </div>'
+
 @app.route('/updatelocation/<id>/<latitude>/<longitude>')
 def updatelocation(uid, latitude, longitude):
 	#Update Database
