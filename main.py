@@ -28,7 +28,7 @@ def adduser(firstname, email, phone, latitude, longitude):
 	count, = cur.fetchone()
 	print(count)
 	count += 10000000
-	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), firstname, email, phone, int(zipcode), int(latitude), int(longitude)))
+	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), str(phone), zipcode, int(latitude), int(longitude)))
 	con.commit()
 	con.close()
 	return '<div> Test: Success </div>'
