@@ -17,18 +17,26 @@ def read_template(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)
 
+def get_zipcode(latitude, longitude):
+	con = sqlite3.connect('record.sqlite3')
+	cur = con.cursor()
+	zipcode_query_result = cur.execute('SELECT * from zipcodes')
+	zipcodes = zipcode_query_result.fetchall()
+	zipcodes.sort(key = lambda x: distance.calculate(latitude, longitude, x[1], x[2]))
+	zipcode = zipcodes[0][0]
+	con.close()
+	return zipcode
+
 @app.route('/adduser/<firstname>/<email>/<phone>/<latitude>/<longitude>')
 def adduser(firstname, email, phone, latitude, longitude):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
-	#TODO: Add in Zipcode functionality later 
-	zipcode = 11111
-	#
+	zipcode = get_zipcode(latitude, longitude)
 	cur.execute('SELECT count(*) from users')
 	count, = cur.fetchone()
 	print(count)
 	count += 10000000
-	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), str(phone), zipcode, int(latitude), int(longitude)))
+	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), str(phone), zipcode, latitude, longitude))
 	con.commit()
 	con.close()
 	return '<div> Test: Success </div>'

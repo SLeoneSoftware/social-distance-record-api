@@ -11,7 +11,7 @@ firstname TEXT,
 email  TEXT,
 phone TEXT CHECK (phone NOT LIKE '%[^0-9]%') CHECK (length(phone) == 10),
 zipcode TEXT CHECK (zipcode NOT LIKE '%[^0-9]%') CHECK (length(zipcode) == 5),
-latitude integer NOT NULL,
-longitude integer NOT NULL,
+latitude REAL NOT NULL,
+longitude REAL NOT NULL,
 PRIMARY KEY(id)
 );
