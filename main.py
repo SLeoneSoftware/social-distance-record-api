@@ -7,6 +7,7 @@ import smtplib
 from string import Template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import os
 
 
 
@@ -22,7 +23,7 @@ def get_zipcode(latitude, longitude):
 	cur = con.cursor()
 	zipcode_query_result = cur.execute('SELECT * from zipcodes')
 	zipcodes = zipcode_query_result.fetchall()
-	zipcodes.sort(key = lambda x: distance.calculate(latitude, longitude, x[1], x[2]))
+	zipcodes.sort(key = lambda x: distance.calculate(float(latitude), float(longitude), float(x[1]), float(x[2])))
 	zipcode = zipcodes[0][0]
 	con.close()
 	return zipcode
@@ -36,12 +37,14 @@ def adduser(firstname, email, latitude, longitude):
 	count, = cur.fetchone()
 	print(count)
 	count += 10000000
-	cur.execute('INSERT INTO users (id, firstname, email, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), zipcode, latitude, longitude))
+	cur.execute('INSERT INTO users (id, firstname, email, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), zipcode, latitude, longitude))
 	con.commit()
 	con.close()
-	return '<div> Test: Success </div>'
+	json = {}
+	json['id'] = count
+	return jsonify(json)
 
-@app.route('/updatelocation/<id>/<latitude>/<longitude>')
+@app.route('/updatelocation/<uid>/<latitude>/<longitude>')
 def updatelocation(uid, latitude, longitude):
 	#Update Database
 	con = sqlite3.connect('record.sqlite3')
@@ -51,13 +54,13 @@ def updatelocation(uid, latitude, longitude):
 	#Search for users in contact
 	cur.execute('SELECT zipcode FROM users WHERE id = ?', (uid,))
 	zipcode, = cur.fetchone()
-	cur.execute('SELECT latitude, longitude, id FROM users WHERE zipcode = ?', (zipcode))
+	cur.execute('SELECT latitude, longitude, id FROM users WHERE zipcode = ?', (zipcode,))
 	while True:
 		row = cur.fetchone()
 		if row == None:
 			break
 		lat_two,long_two, uid_two = row
-		social_distance = distance.calculate(latitude, longitude,lat_two, long_two) / 3280.839895 #changing km to feet
+		social_distance = distance.calculate(float(latitude), float(longitude),float(lat_two), float(long_two)) / 3280.839895 #changing km to feet
 		#account for +/- 3 feet in location
 		if social_distance < 9:
 			#add contact
@@ -65,17 +68,19 @@ def updatelocation(uid, latitude, longitude):
 			timestamp = str(datetime.now())
 			date = timestamp[0:10]
 			time = timestamp[11:16]
-			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid, uid_two, date, time))
-			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?)', (uid_two, uid, date, time))
+			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?,?)', (uid, uid_two, date, time))
+			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?,?)', (uid_two, uid, date, time))
 	con.commit()
 	con.close()
-	return 0
+	json = {}
+	json['result'] = 'success'
+	return jsonify(json)
 
-@app.route('/testedpositive/<id>')
+@app.route('/testedpositive/<uid>')
 def testedpositive(uid):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
-	cur.execute('SELECT contacted.contacteduser, contacted.datemark, contacted.timemark, user.email FROM contacted JOIN user on contacted.contacteduser = user.id  WHERE contacted.user = uid')
+	cur.execute('SELECT contacted.datemark, contacted.timemark, users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ?', (uid,))
 	s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
 	s.starttls()
 	from dotenv import load_dotenv
@@ -89,15 +94,17 @@ def testedpositive(uid):
 		if row == None:
 			break
 		msg = MIMEMultipart()
+		date, time, email, name = row
 		message = message_template.substitute(PERSON_NAME=name)
-		name, date, time, email = row
 		msg['From']=MY_ADDRESS
 		msg['To'] = email
 		msg['Subject']="You contacted a COVID-19 positive patient on " + date + " at " + time + "."
 		s.send_message(msg)
 		del msg
 	con.close()
-	return 0
+	json = {}
+	json['result'] = 'success'
+	return jsonify(json)
 
 if __name__ == '__main__':
 	app.debug = True
