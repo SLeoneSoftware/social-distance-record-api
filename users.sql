@@ -12,5 +12,6 @@ email  TEXT,
 zipcode TEXT CHECK (zipcode NOT LIKE '%[^0-9]%') CHECK (length(zipcode) == 5),
 latitude REAL NOT NULL,
 longitude REAL NOT NULL,
-PRIMARY KEY(id)
+PRIMARY KEY(id),
+FOREIGN KEY (zipcode) REFERENCES zipcodes(zipcode)
 );
