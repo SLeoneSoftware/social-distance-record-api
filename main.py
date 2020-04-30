@@ -27,8 +27,8 @@ def get_zipcode(latitude, longitude):
 	con.close()
 	return zipcode
 
-@app.route('/adduser/<firstname>/<email>/<phone>/<latitude>/<longitude>')
-def adduser(firstname, email, phone, latitude, longitude):
+@app.route('/adduser/<firstname>/<email>/<latitude>/<longitude>')
+def adduser(firstname, email, latitude, longitude):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
 	zipcode = get_zipcode(latitude, longitude)
@@ -36,7 +36,7 @@ def adduser(firstname, email, phone, latitude, longitude):
 	count, = cur.fetchone()
 	print(count)
 	count += 10000000
-	cur.execute('INSERT INTO users (id, firstname, email, phone, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), str(phone), zipcode, latitude, longitude))
+	cur.execute('INSERT INTO users (id, firstname, email, zipcode, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)', (int(count), str(firstname), str(email), zipcode, latitude, longitude))
 	con.commit()
 	con.close()
 	return '<div> Test: Success </div>'
