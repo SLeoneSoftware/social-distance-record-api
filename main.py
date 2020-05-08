@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, redirect, url_for, abort
 from flask_restful import Resource
 import sqlite3
+import launchScript
 import distance
 from datetime import datetime
 import smtplib
@@ -111,5 +112,6 @@ def testedpositive(uid):
 	return jsonify(json)
 
 if __name__ == '__main__':
-	#app.debug = True
-	#app.run(host='0.0.0.0', port=3000)
+	launchScript.run()
+#app.debug = True
+#app.run(host='0.0.0.0', port=3000)
