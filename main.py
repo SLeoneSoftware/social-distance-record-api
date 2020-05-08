@@ -22,7 +22,11 @@ def read_template(filename):
 def get_zipcode(latitude, longitude):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
-	zipcode_query_result = cur.execute('SELECT * from zipcodes')
+	try:
+		zipcode_query_result = cur.execute('SELECT * from zipcodes')
+	except sqlite3.Error as e:
+		launchScript.run()
+		zipcode_query_result = cur.execute('SELECT * from zipcodes')
 	zipcodes = zipcode_query_result.fetchall()
 	zipcodes.sort(key = lambda x: distance.calculate(float(latitude), float(longitude), float(x[1]), float(x[2])))
 	zipcode = zipcodes[0][0]
