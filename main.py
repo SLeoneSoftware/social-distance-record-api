@@ -102,6 +102,7 @@ def testedpositive(uid):
 		msg['From']=MY_ADDRESS
 		msg['To'] = email
 		msg['Subject']="You contacted a COVID-19 positive patient on " + date + "."
+		msg.attach(MIMEText(message, 'plain'))
 		s.send_message(msg)
 		del msg
 	con.close()
