@@ -65,11 +65,14 @@ def updatelocation(uid, latitude, longitude):
 		if social_distance < 9:
 			#add contact
 			cur2 = con.cursor()
+			'''
+			Times have been replaced; logic is now done by database. This is left commented rather than deleted for slight editing reasons.
 			timestamp = str(datetime.now())
 			date = timestamp[0:10]
 			time = timestamp[11:16]
-			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?,?)', (uid, uid_two, date, time))
-			cur2.execute('INSERT INTO contacted (user, contacteduser, datemark, timemark) VALUES (?, ?, ?,?)', (uid_two, uid, date, time))
+			'''
+			cur2.execute('INSERT INTO contacted (user, contacteduser) VALUES (?, ?)', (uid, uid_two))
+			cur2.execute('INSERT INTO contacted (user, contacteduser) VALUES (?, ?)', (uid_two, uid))
 	con.commit()
 	con.close()
 	json = {}
@@ -80,7 +83,7 @@ def updatelocation(uid, latitude, longitude):
 def testedpositive(uid):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
-	cur.execute('SELECT contacted.datemark, contacted.timemark, users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ?', (uid,))
+	cur.execute('SELECT contacted.datemark users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ? AND contacted.datemark >= dateadd(day,-14,getdate())', (uid,))
 	s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
 	s.starttls()
 	from dotenv import load_dotenv
@@ -94,11 +97,11 @@ def testedpositive(uid):
 		if row == None:
 			break
 		msg = MIMEMultipart()
-		date, time, email, name = row
+		date, email, name = row
 		message = message_template.substitute(PERSON_NAME=name)
 		msg['From']=MY_ADDRESS
 		msg['To'] = email
-		msg['Subject']="You contacted a COVID-19 positive patient on " + date + " at " + time + "."
+		msg['Subject']="You contacted a COVID-19 positive patient on " + date + "."
 		s.send_message(msg)
 		del msg
 	con.close()
