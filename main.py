@@ -83,7 +83,7 @@ def updatelocation(uid, latitude, longitude):
 def testedpositive(uid):
 	con = sqlite3.connect('record.sqlite3')
 	cur = con.cursor()
-	cur.execute('SELECT contacted.datemark users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ? AND contacted.datemark >= dateadd(day,-14,getdate())', (uid,))
+	cur.execute('SELECT contacted.datemark, users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ? AND contacted.datemark >= DateTime("Now", "LocalTime", "-14 Day")', (uid,))
 	s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
 	s.starttls()
 	from dotenv import load_dotenv
