@@ -8,7 +8,7 @@ import os
 #Changing path due to hosting services used
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
-def load_zipcodes(file='zipcodes.txt',path='data',datatype=str):
+def load_zipcodes(file='zipcodes.txt',path='socialDistancingRecordBackEnd/data',datatype=str):
 	data = numpy.genfromtxt(os.path.join(path,file),delimiter=',',dtype=datatype)
 	conn = sqlite3.connect('record.sqlite3')
 	c = conn.cursor()
@@ -43,7 +43,10 @@ def run():
 	conn.commit()
 	c.close()
 	conn.close()
-	load_zipcodes()
+	try:
+		load_zipcodes()
+	except Exception as err:
+		warning = "This has already been done"
 
 run()
 

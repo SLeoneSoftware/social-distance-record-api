@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request, redirect, url_for, abort
 from flask_restful import Resource
 import sqlite3
-import launchScript
 import distance
 from datetime import datetime
 import smtplib
