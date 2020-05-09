@@ -10,7 +10,7 @@ THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
 def load_zipcodes(file='zipcodes.txt',path='socialDistancingRecordBackEnd/data',datatype=str):
 	data = numpy.genfromtxt(os.path.join(path,file),delimiter=',',dtype=datatype)
-	conn = sqlite3.connect('record.sqlite3')
+	conn = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	c = conn.cursor()
 	for row in data:
 		c.execute('INSERT INTO zipcodes (zipcode, latitude, longitude) VALUES (?,?,?)', (row[0], float(row[1]), float(row[2])))
