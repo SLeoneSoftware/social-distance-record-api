@@ -8,5 +8,6 @@
 create table IF NOT EXISTS zipcodes(
 zipcode TEXT CHECK (length(zipcode) == 5),
 latitude REAL NOT NULL,
-longitude REAL NOT NULL
+longitude REAL NOT NULL,
+PRIMARY KEY(zipcode)
 );

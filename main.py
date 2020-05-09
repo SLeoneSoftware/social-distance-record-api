@@ -14,6 +14,7 @@ import os
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
 
+
 app = Flask(__name__)
 
 def read_template(filename):
@@ -22,7 +23,7 @@ def read_template(filename):
     return Template(template_file_content)
 
 def get_zipcode(latitude, longitude):
-	con = sqlite3.connect('record.sqlite3')
+	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
 	zipcode_query_result = cur.execute('SELECT * from zipcodes')
 	zipcodes = zipcode_query_result.fetchall()
@@ -33,7 +34,7 @@ def get_zipcode(latitude, longitude):
 
 @app.route('/adduser/<firstname>/<email>/<latitude>/<longitude>')
 def adduser(firstname, email, latitude, longitude):
-	con = sqlite3.connect('record.sqlite3')
+	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
 	zipcode = get_zipcode(latitude, longitude)
 	cur.execute('SELECT count(*) from users')
@@ -50,7 +51,7 @@ def adduser(firstname, email, latitude, longitude):
 @app.route('/updatelocation/<uid>/<latitude>/<longitude>')
 def updatelocation(uid, latitude, longitude):
 	#Update Database
-	con = sqlite3.connect('record.sqlite3')
+	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
 	cur.execute('UPDATE users SET latitude = ?, longitude = ? WHERE id = ?', (latitude, longitude, uid))
 	con.commit()
@@ -84,7 +85,7 @@ def updatelocation(uid, latitude, longitude):
 
 @app.route('/testedpositive/<uid>')
 def testedpositive(uid):
-	con = sqlite3.connect('record.sqlite3')
+	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
 	cur.execute('SELECT contacted.datemark, users.email, users.firstname FROM contacted JOIN users on contacted.contacteduser = users.id  WHERE contacted.user = ? AND contacted.datemark >= DateTime("Now", "LocalTime", "-14 Day")', (uid,))
 	s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
@@ -114,6 +115,6 @@ def testedpositive(uid):
 	return jsonify(json)
 
 if __name__ == '__main__':
-	launchScript.run()
-#app.debug = True
-#app.run(host='0.0.0.0', port=3000)
+	success = True
+	#app.debug = True
+	#app.run(host='0.0.0.0', port=3000)
