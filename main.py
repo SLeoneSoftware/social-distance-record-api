@@ -8,6 +8,7 @@ from string import Template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
+import launchScript
 
 #Changing path due to hosting services used
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +25,10 @@ def read_template(filename):
 def get_zipcode(latitude, longitude):
 	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
-	zipcode_query_result = cur.execute('SELECT * from zipcodes')
+	try:
+		zipcode_query_result = cur.execute('SELECT * from zipcodes')
+	except Exception as err:
+		launchScript.run()
 	zipcodes = zipcode_query_result.fetchall()
 	zipcodes.sort(key = lambda x: distance.calculate(float(latitude), float(longitude), float(x[1]), float(x[2])))
 	zipcode = zipcodes[0][0]

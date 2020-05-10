@@ -8,7 +8,7 @@ import os
 #Changing path due to hosting services used
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
-def load_zipcodes(file='zipcodes.txt',path='socialDistancingRecordBackEnd/data',datatype=str):
+def load_zipcodes(file='zipcodes.txt',path='data',datatype=str):
 	data = numpy.genfromtxt(os.path.join(path,file),delimiter=',',dtype=datatype)
 	conn = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	c = conn.cursor()
