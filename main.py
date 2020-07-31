@@ -31,7 +31,7 @@ def get_zipcode(latitude, longitude):
 	con.close()
 	return zipcode
 
-@app.route('/confirmemail/<uid>/<encrypted>')
+@app.route('/confirmemail/<uid>/<encrypted>', methods = ['PUT'])
 def confirmemail(uid, encrypted):
 	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
@@ -50,7 +50,7 @@ def confirmemail(uid, encrypted):
 		return '<div> There was a problem with your account. This will be reviewed shortly. Please reply to your confirmation email if you think this is an error. </div>'
 
 
-@app.route('/adduser/<firstname>/<email>/<latitude>/<longitude>')
+@app.route('/adduser/<firstname>/<email>/<latitude>/<longitude>', methods = ['POST'])
 def adduser(firstname, email, latitude, longitude):
 	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
@@ -87,7 +87,7 @@ def adduser(firstname, email, latitude, longitude):
 	json['id'] = count
 	return jsonify(json)
 
-@app.route('/updatelocation/<uid>/<latitude>/<longitude>')
+@app.route('/updatelocation/<uid>/<latitude>/<longitude>', methods = ['PUT'])
 def updatelocation(uid, latitude, longitude):
 	#Update Database
 	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
@@ -123,7 +123,7 @@ def updatelocation(uid, latitude, longitude):
 	json['result'] = 'success'
 	return jsonify(json)
 
-@app.route('/testedpositive/<uid>')
+@app.route('/testedpositive/<uid>', methods = ['POST'])
 def testedpositive(uid):
 	con = sqlite3.connect(os.path.join(THIS_FOLDER, 'record.sqlite3'))
 	cur = con.cursor()
