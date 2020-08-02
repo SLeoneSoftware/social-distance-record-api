@@ -43,11 +43,11 @@ def confirmemail(uid, encrypted):
 		cur.execute('DELETE FROM encryptions WHERE id = ?', (uid,))
 		con.commit()
 		con.close()
-		return '<div> Your account has been confirmed. Thank you! </div>'
+		return '<div> Your account has been confirmed. Thank you! </div>', 200
 	else:
 		con.commit()
 		con.close()
-		return '<div> There was a problem with your account. This will be reviewed shortly. Please reply to your confirmation email if you think this is an error. </div>'
+		return '<div> There was a problem with your account. This will be reviewed shortly. Please reply to your confirmation email if you think this is an error. </div>', 400
 
 
 @app.route('/adduser/<firstname>/<email>/<latitude>/<longitude>', methods = ['POST'])
@@ -75,7 +75,7 @@ def adduser(firstname, email, latitude, longitude):
 	import secrets
 	encrypted = secrets.token_urlsafe(16)
 	cur.execute('INSERT INTO encryptions (id, encrypted) VALUES (?, ?)', (int(count), encrypted ))
-	link = 'SUPER_SECRET_LINK'
+	link = 'https://sleone6.pythonanywhere.com/confirmemail/' + str(count) + '/' + str(encrypted)
 	message = message_template.substitute(PERSON_NAME=link)
 	msg.attach(MIMEText(message, 'plain'))
 	s.send_message(msg)
